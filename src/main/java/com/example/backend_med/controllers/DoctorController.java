@@ -2,6 +2,7 @@ package com.example.backend_med.controllers;
 
 import com.example.backend_med.dtos.DoctorDTO;
 import com.example.backend_med.models.Doctor;
+import com.example.backend_med.models.Meet;
 import com.example.backend_med.pipelines.DoctorAggregation;
 import com.example.backend_med.pipelines.Property;
 import com.example.backend_med.response.ResponseHandler;
@@ -54,8 +55,9 @@ public class DoctorController {
 
     @DeleteMapping("/doctors/{id}")
     public ResponseEntity<Object> delete(@PathVariable String id) {
-        Doctor doc = mongoTemplate.findAndRemove(new Query(Criteria.where("id").is(id)), Doctor.class);
-        return ResponseHandler.generateResponse("registrado", HttpStatus.OK, doc);
+        Doctor doc = mongoTemplate.findAndRemove(new Query(Criteria.where("_id").is(id)), Doctor.class);
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("doctor._id").is(id)), Meet.class);
+        return ResponseHandler.generateResponse("doctor y citas asociadas eliminadas", HttpStatus.OK, doc);
     }
 
     @GetMapping("/doctors/specialty/{id}")

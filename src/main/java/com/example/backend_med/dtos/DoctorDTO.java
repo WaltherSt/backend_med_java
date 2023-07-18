@@ -1,7 +1,5 @@
 package com.example.backend_med.dtos;
-
 import lombok.Data;
-
 @Data
 public class DoctorDTO {
     String _id;

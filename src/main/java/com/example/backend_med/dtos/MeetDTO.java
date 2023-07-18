@@ -1,9 +1,8 @@
 package com.example.backend_med.dtos;
-
 import lombok.Data;
-
 @Data
 public class MeetDTO {
+    private String _id;
     private String date;
     private String hour;
     private String patient;

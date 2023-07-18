@@ -1,5 +1,6 @@
 package com.example.backend_med.controllers;
 
+import com.example.backend_med.models.Meet;
 import com.example.backend_med.models.Patient;
 import com.example.backend_med.response.ResponseHandler;
 import lombok.RequiredArgsConstructor;
@@ -47,16 +48,17 @@ public class PatientController {
     }
 
     @PatchMapping("/patients/{id}")
-    public ResponseEntity<Object> updateDoctor(@RequestBody Patient patient, @PathVariable String id) {
+    public ResponseEntity<Object> update(@RequestBody Patient patient, @PathVariable String id) {
         patient.set_id(id);
         Patient updatedPatient = mongoTemplate.save(patient, "patients");
         return ResponseHandler.generateResponse("paciente actualizado", HttpStatus.OK, updatedPatient);
     }
 
     @DeleteMapping("/patients/{id}")
-    public ResponseEntity<Object> deleteDoctor(@PathVariable String id) {
-        Patient deletedPatient = mongoTemplate.findAndRemove(new Query(Criteria.where("id").is(id)), Patient.class);
-        return ResponseHandler.generateResponse("coincidencias", HttpStatus.OK, deletedPatient);
+    public ResponseEntity<Object> delete(@PathVariable String id) {
+        Patient patient = mongoTemplate.findAndRemove(new Query(Criteria.where("_id").is(id)), Patient.class);
+        mongoTemplate.findAllAndRemove(new Query(Criteria.where("patient._id").is(id)), Meet.class);
+        return ResponseHandler.generateResponse("paciente y citas asociadas eliminados", HttpStatus.OK, patient);
     }
 
 

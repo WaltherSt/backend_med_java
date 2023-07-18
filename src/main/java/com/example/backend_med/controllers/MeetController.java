@@ -1,8 +1,9 @@
 package com.example.backend_med.controllers;
+
 import com.example.backend_med.dtos.MeetDTO;
+import com.example.backend_med.dtos.MeetDoctorDate;
 import com.example.backend_med.models.Meet;
 import com.example.backend_med.pipelines.MeetAggregation;
-import com.example.backend_med.pipelines.MeetDataDate;
 import com.example.backend_med.response.ResponseHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -43,18 +44,18 @@ public class MeetController {
     }
 
     @DeleteMapping("/meets/{id}")
-    public ResponseEntity<Object> deleteById(@PathVariable String id) {
+    public ResponseEntity<Object> delete(@PathVariable String id) {
         Query query = new Query(Criteria.where("id").is(id));
         Meet meet = mongoTemplate.findAndRemove(query, Meet.class);
-        return ResponseHandler.generateResponse("lista de citas", HttpStatus.OK, meet);
+        return ResponseHandler.generateResponse("cita eliminada", HttpStatus.OK, "");
     }
 
     @GetMapping("/meets/{id_doctor}/{date}")
     public ResponseEntity<Object> getMeetsByDoctorAndDate(@PathVariable String id_doctor, @PathVariable String date) {
         Aggregation meetAggregation = MeetAggregation
                 .aggregation(id_doctor, date);
-        AggregationResults<MeetDataDate> meetList = mongoTemplate
-                .aggregate(meetAggregation, "meets", MeetDataDate.class);
-        return ResponseHandler.generateResponse("lista de citas", HttpStatus.OK, meetList.getMappedResults());
+        AggregationResults<MeetDoctorDate> meetList = mongoTemplate
+                .aggregate(meetAggregation, "meets", MeetDoctorDate.class);
+        return ResponseHandler.generateResponse("lista de citas por horas ocupadas", HttpStatus.OK, meetList.getMappedResults());
     }
 }
