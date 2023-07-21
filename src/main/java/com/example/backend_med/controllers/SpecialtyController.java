@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +23,11 @@ public class SpecialtyController {
         List<Specialty> specialties = mongoTemplate
                 .findAll(Specialty.class);
         return ResponseHandler.generateResponse("lista de citas", HttpStatus.OK, specialties);
+    }
+
+    @PostMapping("/specialties")
+    public ResponseEntity<Object> create(@RequestBody Specialty specialty) {
+        Specialty specialty1 = mongoTemplate.save(specialty, "specialties");
+        return ResponseHandler.generateResponse("especialidad registrada", HttpStatus.CREATED, specialty1);
     }
 }
