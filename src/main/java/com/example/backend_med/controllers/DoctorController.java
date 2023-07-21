@@ -1,15 +1,11 @@
 package com.example.backend_med.controllers;
 
-import com.example.backend_med.dtos.DoctorDTO;
 import com.example.backend_med.models.Doctor;
 import com.example.backend_med.models.Meet;
-import com.example.backend_med.pipelines.DoctorAggregation;
-import com.example.backend_med.pipelines.Property;
 import com.example.backend_med.response.ResponseHandler;
+import com.example.backend_med.services.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -25,32 +21,26 @@ import java.util.List;
 public class DoctorController {
 
     private final MongoTemplate mongoTemplate;
+    private final DoctorService doctorService;
 
     @PostMapping("/doctors")
     public ResponseEntity<Object> create(@RequestBody Doctor doctor) {
-        Doctor doc = mongoTemplate.save(doctor, "doctors");
-        return ResponseHandler.generateResponse("registrado", HttpStatus.OK, doc);
+        return doctorService.create(doctor);
     }
 
     @GetMapping("/doctors")
     public ResponseEntity<Object> findAll() {
-        Aggregation aggregation = DoctorAggregation.aggregation();
-        AggregationResults<DoctorDTO> doctors = mongoTemplate.aggregate(aggregation, "doctors", DoctorDTO.class);
-        return ResponseHandler.generateResponse("lista de doctores", HttpStatus.OK, doctors.getMappedResults());
+        return doctorService.findAll();
     }
 
     @GetMapping("/doctors/{id}")
     public ResponseEntity<Object> findById(@PathVariable String id) {
-        Aggregation aggregation = DoctorAggregation.aggregation(id, Property.ID);
-        AggregationResults<DoctorDTO> doctor = mongoTemplate.aggregate(aggregation, "doctors", DoctorDTO.class);
-        return ResponseHandler.generateResponse("doctor", HttpStatus.OK, doctor.getMappedResults());
+        return doctorService.findById(id);
     }
 
     @PatchMapping("/doctors/{id}")
     public ResponseEntity<Object> update(@RequestBody Doctor doctor, @PathVariable String id) {
-        doctor.set_id(id);
-        Doctor doc = mongoTemplate.save(doctor, "doctors");
-        return ResponseHandler.generateResponse("registrado", HttpStatus.OK, doc);
+        return doctorService.update(doctor, id);
     }
 
     @DeleteMapping("/doctors/{id}")
