@@ -1,27 +1,38 @@
 package com.example.backend_med.controllers;
 
+import com.example.backend_med.models.Meet;
 import com.example.backend_med.models.Patient;
+import com.example.backend_med.response.ResponseHandler;
 import com.example.backend_med.services.PatientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class PatientController {
 
+    private final MongoTemplate mongoTemplate;
+
     private final PatientService patientService;
+
     @PostMapping("/patients")
     public ResponseEntity<Object> create(@RequestBody Patient data) {
         return patientService.createPatient(data);
     }
+
     @GetMapping("/patients")
     public ResponseEntity<Object> findAll() {
         return patientService.findAllPatients();
     }
-      /*
 
     @GetMapping("/patients/{id}")
     public ResponseEntity<Object> findById(@PathVariable String id) {
@@ -49,7 +60,7 @@ public class PatientController {
         Patient patient = mongoTemplate.findAndRemove(new Query(Criteria.where("_id").is(id)), Patient.class);
         mongoTemplate.findAllAndRemove(new Query(Criteria.where("patient._id").is(id)), Meet.class);
         return ResponseHandler.generateResponse("paciente y citas asociadas eliminados", HttpStatus.OK, patient);
-    }*/
+    }
 
 
 }
